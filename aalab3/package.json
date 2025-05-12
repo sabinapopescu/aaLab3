@@ -13,6 +13,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-graph-vis": "^1.0.7",
+    "recharts": "^2.15.3",
     "vis-network": "^9.1.9"
   },
   "devDependencies": {
