@@ -1,0 +1,172 @@
+// // utils/graphGenerator.js
+// export function generateRandomGraph(n = 10, density = "sparse") {
+//     const adjList = new Map(Array.from({ length: n }, (_, i) => [i, []]));
+  
+//     // How many edges do we want?
+//     const maxEdges = n * (n - 1) / 2;
+//     const targetEdges =
+//       density === "dense" ? maxEdges : Math.round(1.5 * n);
+  
+//     while (countEdges(adjList) < targetEdges) {
+//       const u = randInt(0, n - 1);
+//       let v = randInt(0, n - 1);
+//       if (v === u) continue;
+//       const w = randInt(1, 9);                     // weight 1‑9
+//       if (!adjList.get(u).some(e => e.to === v)) { // avoid duplicates
+//         adjList.get(u).push({ to: v, weight: w });
+//         adjList.get(v).push({ to: u, weight: w }); // undirected
+//       }
+//     }
+  
+//     // Prepare data for react‑graph‑vis
+//     const nodes = Array.from({ length: n }, (_, i) => ({ id: i, label: `${i}` }));
+//     const edges = [];
+//     for (const [u, list] of adjList) {
+//       list.forEach(({ to: v, weight }) => {
+//         if (u < v) edges.push({ from: u, to: v, label: `${weight}` });
+//       });
+//     }
+  
+//     return { adjList, visData: { nodes, edges } };
+//   }
+  
+//   // helpers -------------------------------------------------------------
+//   const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  
+//   const countEdges = (adjList) =>
+//     Array.from(adjList.values()).reduce((s, arr) => s + arr.length, 0) / 2;
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+// utils/graphGenerator.js
+
+/**
+ * Original random graph generator (undirected) for basic density-based graphs
+ */
+
+
+export function generateRandomGraph(n = 10, density = "sparse") {
+  const adjList = new Map(Array.from({ length: n }, (_, i) => [i, []]));
+  const maxEdges = n * (n - 1) / 2;
+  const targetEdges = density === "dense" ? maxEdges : Math.round(1.5 * n);
+
+  while (countEdges(adjList) < targetEdges) {
+    const u = randInt(0, n - 1);
+    let v = randInt(0, n - 1);
+    if (v === u) continue;
+    const w = randInt(1, 9);
+    if (!adjList.get(u).some(e => e.to === v)) {
+      adjList.get(u).push({ to: v, weight: w });
+      adjList.get(v).push({ to: u, weight: w });
+    }
+  }
+
+  const nodes = Array.from({ length: n }, (_, i) => ({ id: i, label: `${i}` }));
+  const edges = [];
+  for (const [u, list] of adjList) {
+    list.forEach(({ to: v, weight }) => {
+      if (u < v) edges.push({ from: u, to: v, label: `${weight}`, id: `e-${u}-${v}` });
+    });
+  }
+
+  return { nodes, edges };
+}
+
+// ---- Specialized constructors ----
+
+export function generateTree(n) {
+  const nodes = Array.from({ length: n }, (_, i) => ({ id: i, label: `${i}` }));
+  const edges = [];
+  for (let i = 1; i < n; i++) {
+    const parent = Math.floor(Math.random() * i);
+    edges.push({ from: parent, to: i, id: `e-${parent}-${i}` });
+  }
+  return { nodes, edges };
+}
+
+export function generateComplete(n) {
+  const nodes = Array.from({ length: n }, (_, i) => ({ id: i, label: `${i}` }));
+  const edges = [];
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      edges.push({ from: i, to: j, id: `e-${i}-${j}` });
+    }
+  }
+  return { nodes, edges };
+}
+
+export function generateBipartite(n) {
+  const nodes = Array.from({ length: n }, (_, i) => ({ id: i, label: `${i}` }));
+  const edges = [];
+  const mid = Math.floor(n / 2);
+  for (let i = 0; i < mid; i++) {
+    for (let j = mid; j < n; j++) {
+      if (Math.random() < 0.5) edges.push({ from: i, to: j, id: `e-${i}-${j}` });
+    }
+  }
+  return { nodes, edges };
+}
+
+// ---- General dispatcher ----
+
+/**
+ * params: {
+ *   n: number,
+ *   family?: 'tree'|'complete'|'bipartite'|'general',
+ *   direction?: 'any'|'undirected'|'directed'|'mixed',
+ *   connectivity?: 'any'|'connected'|'disconnected',
+ *   cyclicity?: 'any'|'cyclic'|'acyclic',
+ *   density?: 'any'|'sparse'|'dense'
+ * }
+ */
+export function createGraphFromParams(params) {
+  const { n, family = 'general', direction = 'any', connectivity = 'any', cyclicity = 'any', density = 'any' } = params;
+
+  // Special families
+  if (family === 'tree')      return generateTree(n);
+  if (family === 'complete')  return generateComplete(n);
+  if (family === 'bipartite') return generateBipartite(n);
+
+  // General: start from density
+  const useDensity = density === 'any' ? 'sparse' : density;
+  let graph = generateRandomGraph(n, useDensity);
+
+  // Direction: if directed or mixed
+  if (direction === 'directed' || direction === 'mixed') {
+    graph.edges = graph.edges.map(e => ({
+      ...e,
+      arrows: 'to',
+      id: direction === 'mixed' && Math.random() < 0.5 ? e.id + '-d' : e.id
+    }));
+  }
+
+  // TODO: filter connectivity & cyclicity if needed
+  // For now, connectivity and cyclicity flags are placeholders
+
+  return graph;
+}
+
+// helpers
+const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const countEdges = adjList => Array.from(adjList.values()).reduce((s, arr) => s + arr.length, 0) / 2;

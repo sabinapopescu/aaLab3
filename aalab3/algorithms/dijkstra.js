@@ -87,15 +87,30 @@ export function dijkstra(graph, source = 0) {
       if (u === null) break;
   
       visited[u] = true;
-      steps.push({ type: "settle", node: u, dist: [...dist] });
+      steps.push({
+        type: "settle",
+        node: u,
+        dist: [...dist],
+        highlight: { kind: "node", id: u }
+      });
   
       for (const { to: v, weight: w } of graph.get(u)) {
         if (visited[v]) continue;
         const alt = dist[u] + w;
         if (alt < dist[v]) {
+          const old = dist[v];
           dist[v] = alt;
           prev[v] = u;
-          steps.push({ type: "relax", from: u, to: v, newDist: alt, dist: [...dist] });
+          // Highlight “we’re relaxing edge u→v”
+          steps.push({
+            type: "relax",
+            from: u,
+            to: v,
+            oldDist: old,
+            newDist: alt,
+            dist: [...dist],
+            highlight: { kind: "edge", from: u, to: v }
+          });
         }
       }
     }
