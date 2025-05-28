@@ -10,12 +10,20 @@ export default function Home() {
           <Link className="text-blue-600 underline" href="/dfs-bfs">
             Lab 3 – DFS & BFS Analysis
           </Link>
-          
-        </li>
+          </li>
+        
         {/* Later: Add links for Lab 5 and Lab 7 */}
-        <Link className="text-blue-600 underline" href="/dijkstra-floydmarshall">
+        <li>
+          <Link className="text-blue-600 underline" href="/dijkstra-floydmarshall">
             Lab 5 – Dynamic Programming / Shortest‑Path Visualiser
           </Link>
+        </li>
+        <li>
+          <Link className="text-blue-600 underline" href="/greedy-algorithms">
+          Lab 7 – Greedy Algorithms / MST Visualiser
+          </Link>
+        </li>
+        
       </ul>
     </main>
   );

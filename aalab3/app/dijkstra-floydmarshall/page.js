@@ -2,8 +2,8 @@
 "use client";
 import { useState, useCallback } from "react";
 import Controls from "./controls";
-import StepPlayer from "./StepPlayer";
-import BenchmarkChart from "./BenchmarkChart";
+import StepPlayer from "../../components/StepPlayer";
+import BenchmarkChart from "../../components/BenchmarkChart";
 
 import dynamic from "next/dynamic";
 const GraphVisualizer = dynamic(

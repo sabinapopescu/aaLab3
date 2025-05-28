@@ -37,4 +37,19 @@ export function listToMatrix(adjList, size, INF = Infinity) {
     }
     return list;
   }
-  
+  /**
+ * buildAdjList: convert vis-data nodes & edges into adjacency-list for algorithms.
+ *
+ * @param {{id:number}[]} nodes
+ * @param {{from:number,to:number,label?:string}[]} edges
+ * @returns {Map<number, Array<{to:number, weight:number}>>}
+ */
+export function buildAdjList(nodes, edges) {
+  const adjList = new Map(nodes.map((n) => [n.id, []]));
+  edges.forEach(({ from, to, label }) => {
+    const w = label !== undefined ? Number(label) : 1;
+    adjList.get(from).push({ to, weight: w });
+    adjList.get(to).push({ to: from, weight: w });
+  });
+  return adjList;
+}
